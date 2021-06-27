@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "265508499359",
+    "project_id": "fir-weather-2c92e",
+    "storage_bucket": "fir-weather-2c92e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:265508499359:android:d3202b646482bd0feb17aa",
+        "android_client_info": {
+          "package_name": "com.furkanacar.weather_auth_app_with_bloc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "265508499359-dqmur6t5r4nnc5m9tapth57bmhmhj102.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.furkanacar.weather_auth_app_with_bloc",
+            "certificate_hash": "5860629105c0dc7e9157e8efa8dc15a73e4ba948"
+          }
+        },
+        {
+          "client_id": "265508499359-n7hnhor55dtaimib90146ujfprbmb3dq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNJjx7ARP2YUJ_1lJSRKv2sEV8Vt1yxSY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "265508499359-n7hnhor55dtaimib90146ujfprbmb3dq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
