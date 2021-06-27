@@ -46,6 +46,7 @@ dependencies:
   custom_refresh_indicator: ^1.0.0
   connectivity: ^3.0.6
   autocomplete_textfield_ns: ^2.0.0
+  flutter_zoom_drawer: ^2.0.2+4
 
 dev_dependencies:
   flutter_test:

@@ -1,23 +1,31 @@
+/*
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:weather_auth_app_with_bloc/model/user.dart';
 import 'package:weather_auth_app_with_bloc/repository/user_repository.dart';
 import 'package:weather_auth_app_with_bloc/utils/locator/locator.dart';
 
-enum UserState { loggedIn, notLoggedIn, logging, signInPage, loginPage }
+enum UserState { loggedIn, notLoggedIn, logging, error }
 
 class UserAuthViewModel with ChangeNotifier {
-  /* MyUser? _myUser = MyUser();*/
-
+  UserRepository _userRepository = getIt<UserRepository>();
   FirebaseAuth _auth = FirebaseAuth.instance;
   UserState _userState = UserState.notLoggedIn;
 
-  User? _firebaseUser;
+  MyUser? _myUser = null;
 
-  User? get user => _firebaseUser;
+  MyUser? get user => _myUser;
 
+  set user(MyUser? value) {
+    _myUser = value;
+  } //User? _firebaseUser;
+
+  //User? get user => _firebaseUser;
+/*
   set user(User? value) {
     _firebaseUser = value;
-  }
+  }*/
 
   UserState get userState => _userState;
 
@@ -26,47 +34,45 @@ class UserAuthViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  /// User? get user => _firebaseUser;
   UserAuthViewModel() {
     _auth.authStateChanges().listen(_authStateChanged);
   }
 
   void _authStateChanged(User? user) {
     if (user == null) {
-      user = null;
-
+      this.user = null;
       userState = UserState.notLoggedIn;
-      print(this.user);
       print(userState);
     } else {
       print(this.user);
-
-      this.user = user;
+      MyUser? myUser = _userFromFirebase(user);
+      this.user = myUser;
       userState = UserState.loggedIn;
       print(userState);
     }
   }
 
-  UserRepository _userRepository = getIt<UserRepository>();
-/*
-  Future<MyUser?> currentUser() async {
-    MyUser? user = await _userRepository.currentUser();
-    print(user);
-    myUser = user;
-    print(user == null ? "null user" : user.email);
-    return user;
-  }*/
+  MyUser? _userFromFirebase(User? user) {
+    if (user == null) {
+      print("5");
+      return null;
+    }
+    print("6");
+    return MyUser(id: user.uid, email: user.email!);
+  }
 
-  Future<User?> createUserWithEmailandPassword(
+  Future<MyUser?> createUserWithEmailandPassword(
       String email, String password) async {
     try {
       userState = UserState.logging;
+      _userRepository.createUserWithEmailAndPassword(email, password);
       UserCredential _credential = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       User? newUser = _credential.user;
+      MyUser? myNewUser = _userFromFirebase(newUser);
+      this.user = myNewUser;
       userState = UserState.loggedIn;
-      user = newUser;
-      return newUser;
+      return myNewUser;
     } catch (e) {
       userState = UserState.notLoggedIn;
 
@@ -75,16 +81,17 @@ class UserAuthViewModel with ChangeNotifier {
     }
   }
 
-  Future<User?> signInUserWithEmailandPassword(
+  Future<MyUser?> signInUserWithEmailandPassword(
       String email, String password) async {
     try {
       userState = UserState.logging;
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User? loggedInUser = userCredential.user;
+      MyUser? myNewUser = _userFromFirebase(loggedInUser);
+      this.user = myNewUser;
       userState = UserState.loggedIn;
-      user = loggedInUser;
-      return loggedInUser;
+      return myNewUser;
     } catch (e) {
       userState = UserState.notLoggedIn;
       debugPrint("sign in method error");
@@ -95,7 +102,7 @@ class UserAuthViewModel with ChangeNotifier {
   Future<bool> signOut() async {
     try {
       await _auth.signOut();
-      user = null;
+      this.user = null;
       userState = UserState.notLoggedIn;
       return true;
     } catch (e) {
@@ -103,22 +110,5 @@ class UserAuthViewModel with ChangeNotifier {
       return false;
     }
   }
-
-  /*MyUser? get myUser => _myUser;
-
-  set myUser(MyUser? value) {
-    _myUser = value;
-    notifyListeners();
-  }*/
-/*
-  void signOut() {
-    clear();
-    print(10);
-    _userRepository.signOut();
-    print(11);
-  }*/
-/*
-  void clear() {
-    myUser = null;
-  }*/
 }
+*/

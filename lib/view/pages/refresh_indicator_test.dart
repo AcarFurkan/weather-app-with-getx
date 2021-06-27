@@ -33,9 +33,11 @@ class _Cloud {
 class PlaneIndicator extends StatefulWidget {
   final Widget child;
   final OnRefresh onRefresh;
+  final Color color;
   PlaneIndicator({
     required this.child,
     required this.onRefresh,
+    required this.color,
   });
 
   @override
@@ -216,7 +218,7 @@ class _PlaneIndicatorState extends State<PlaneIndicator>
                                   alignment: Alignment.topLeft,
                                   child: Container(
                                     child: Image(
-                                      color: cloud.color,
+                                      color: widget.color,
                                       image: cloud.image!,
                                       fit: BoxFit.contain,
                                     ),

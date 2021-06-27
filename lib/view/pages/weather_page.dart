@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 import 'package:weather_auth_app_with_bloc/model/my_theme.dart';
 import 'package:weather_auth_app_with_bloc/model/weather.dart';
 import 'package:weather_auth_app_with_bloc/utils/extentions/context_extension.dart';
 import 'package:weather_auth_app_with_bloc/view/pages/settings_page.dart';
-import 'package:weather_auth_app_with_bloc/viewmodel/provider/user_view_model.dart';
+import 'package:weather_auth_app_with_bloc/viewmodel/auth_viewmodel.dart';
 import 'package:weather_auth_app_with_bloc/viewmodel/theme_view_model.dart';
 import 'package:weather_auth_app_with_bloc/viewmodel/weather_viewmodel.dart';
 
@@ -43,7 +42,8 @@ class _WeatherLoadedState extends State<WeatherLoaded> {
     _refreshIndicator = Completer<void>();
     String city = _weatherViewModel.weather.title!;
 
-    final myAuth = Provider.of<UserAuthViewModel>(context, listen: true);
+    //final myAuth = Provider.of<UserAuthViewModel>(context, listen: true);
+    UserAuthViewModel _userAuthViewModel = Get.find();
     return Obx(() {
       return Material(
         borderRadius: BorderRadius.circular(10),
@@ -53,15 +53,17 @@ class _WeatherLoadedState extends State<WeatherLoaded> {
             color: _themeViewModel.scaffoldColor,
           ),
           child: Scaffold(
+            drawer: Drawer(),
             resizeToAvoidBottomInset: false,
             backgroundColor: Colors.transparent,
             appBar: AppBar(
               backgroundColor: _themeViewModel.scaffoldColor,
               title: Text(
-                  " Weather -${myAuth.user == null ? "usernull" : myAuth.user!.email!.substring(0, 6)} "),
+                  " Weather -${_userAuthViewModel.user == null ? "usernull" : _userAuthViewModel.user!.email!.substring(0, 6)} "),
               actions: [buildSearchButton(), buildSettingsButton()],
             ),
             body: PlaneIndicator(
+                color: _themeViewModel.scaffoldColor,
                 onRefresh: () {
                   _weatherViewModel.updateWeather(city);
                   return Future.delayed(const Duration(seconds: 2));
@@ -150,7 +152,7 @@ class _WeatherLoadedState extends State<WeatherLoaded> {
                 height: context.lowValueHeight,
               ),
               Text(
-                "Son güncelleme :" +
+                "Son güncelleme : " +
                     TimeOfDay.fromDateTime(_weather.time!.toLocal())
                         .format(context),
                 style:
@@ -235,12 +237,12 @@ class WeatherPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //UserController _userController = Get.put(UserController());
-    final myAuth = Provider.of<UserAuthViewModel>(context, listen: true);
+    UserAuthViewModel _userAuthViewModel = Get.find();
     WeatherViewModel _weatherViewModel = Get.put(WeatherViewModel());
     ThemeViewModel _themeViewModel = Get.put(ThemeViewModel());
 
-    return Obx(() => buildScaffold(myAuth, context, _themeViewModel));
+    return Obx(
+        () => buildScaffold(_userAuthViewModel, context, _themeViewModel));
   }
 
   Widget buildScaffold(UserAuthViewModel myAuth, BuildContext context,
@@ -292,124 +294,6 @@ class WeatherPage extends StatelessWidget {
           ),
         );
     }
-  }
-
-  Widget buildWeatherLoadedBody(BuildContext context) {
-    WeatherViewModel _weatherViewModel = Get.find();
-    PageController pageController = PageController(initialPage: 0);
-
-    return PageView(
-      controller: pageController,
-      children: buildPageViews(context, _weatherViewModel),
-    );
-  }
-
-  List<Widget> buildPageViews(
-      BuildContext context, WeatherViewModel _weatherViewModel) {
-    List<Widget> pageViewElements = [];
-    for (int i = 0; i < 6; i++) {
-      pageViewElements.add(buildWeatherCard(context, _weatherViewModel, i));
-    }
-    return pageViewElements;
-  }
-
-  Center buildWeatherCard(
-      BuildContext context, WeatherViewModel _weatherViewModel, int index) {
-    Weather _weather = _weatherViewModel.weather;
-    ConsolidatedWeather _consolidatedWeather =
-        _weather.consolidatedWeather![index];
-    ThemeViewModel _themeViewModel = Get.find();
-
-    _themeViewModel.changeTheme(_consolidatedWeather.weatherStateAbbr!);
-
-    MyTheme myTheme = _themeViewModel.myTheme;
-    MaterialColor color = myTheme.color;
-
-    return Center(
-      child: Material(
-        elevation: 10,
-        borderRadius: BorderRadius.circular(15.0),
-        child: Container(
-          height: context.ultraHighValueHeight * 3.25,
-          width: context.ultraHighValueWidth * 3.25,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                colors: [color[700]!, color[500]!, color[200]!],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: [0.6, 0.8, 1]),
-            borderRadius: BorderRadius.circular(15.0),
-            color: Colors.white,
-          ),
-          child: Column(
-            children: [
-              SizedBox(
-                height: context.normalValueHeight,
-              ),
-              Text(
-                _weather.title!,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-              ),
-              SizedBox(
-                height: context.lowValueHeight,
-              ),
-              Text(
-                "Son güncelleme :" +
-                    TimeOfDay.fromDateTime(_weather.time!.toLocal())
-                        .format(context),
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
-              ),
-              SizedBox(
-                height: context.lowValueHeight,
-              ),
-              Text(
-                _consolidatedWeather.theTemp!.toInt().toString() + " ℃",
-                style: const TextStyle(
-                  fontSize: 20,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: 150,
-                  width: 150,
-                  child: Image.network(
-                      "https://www.metaweather.com/static/img/weather/png/" +
-                          _consolidatedWeather.weatherStateAbbr! +
-                          ".png"),
-                ),
-              ),
-              Padding(
-                padding: context.paddingNormalHorizontal * 2,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Minumum: " +
-                          _consolidatedWeather.minTemp!.toInt().toString() +
-                          " ℃",
-                      style: const TextStyle(
-                        fontSize: 13,
-                      ),
-                    ),
-                    Text(
-                      "Maksimum: " +
-                          _consolidatedWeather.maxTemp!.toInt().toString() +
-                          " ℃",
-                      style: const TextStyle(
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   Widget buildSearchButton() {

@@ -28,6 +28,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     var key = GlobalKey<AutoCompleteTextFieldState<String>>();
+
     var citys = [
       "Adana",
       "Adıyaman",

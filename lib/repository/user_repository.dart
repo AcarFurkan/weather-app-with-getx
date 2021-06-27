@@ -30,6 +30,7 @@ class UserRepository {
     } else {
       MyUser? _user = await _firebaseAuthService.createUserWithEmailAndPassword(
           email, password);
+      print(_user);
       return _user;
     }
   }

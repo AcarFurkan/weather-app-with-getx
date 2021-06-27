@@ -1,13 +1,16 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:weather_auth_app_with_bloc/model/user.dart';
-import 'package:weather_auth_app_with_bloc/repository/user_repository.dart';
-import 'package:weather_auth_app_with_bloc/utils/locator/locator.dart';
+
+import '../auth_viewmodel.dart';
 
 class LoginController extends GetxController {
-  UserRepository _userRepository = getIt<UserRepository>();
+  Rx<bool> _isLoginFail = false.obs;
 
+  Rx<TextEditingController> _emailController = TextEditingController().obs;
+
+  Rx<TextEditingController> _passwordController = TextEditingController().obs;
+  UserAuthViewModel _userAuthViewModel = Get.put(UserAuthViewModel());
   @override
   void onInit() {
     super.onInit();
@@ -20,21 +23,32 @@ class LoginController extends GetxController {
     super.onClose();
   }
 
-  Rx<bool> _isLoginFail = false.obs;
+  Future<MyUser?> loginUser(GlobalKey<FormState> formKey) async {
+    MyUser? _myUser;
+    if (formKey.currentState != null && !formKey.currentState!.validate()) {
+      print("aaaa");
+      isLoginFail = true;
+    } else {
+      isLoginFail = false;
+      String tempEmail = emailController.text.trim();
+      String tempPassword = passwordController.text.trim();
 
-  Rx<TextEditingController> _emailController = TextEditingController().obs;
+      _myUser = await _userAuthViewModel.signInUserWithEmailandPassword(
+          tempEmail, tempPassword);
+      //MyUser? myUser = await _userRepository.signInWithEmailAndPassword( tempEmail, tempPassword);
 
-  Rx<TextEditingController> _passwordController = TextEditingController().obs;
-
+    }
+    return _myUser;
+  }
   //late Rx<GlobalKey<FormState>> _formKey = GlobalKey<FormState>().obs;
 
-  Rx<FormFieldValidator<String>?> _emailValidator = ((value) {
+  final Rx<FormFieldValidator<String>?> _emailValidator = ((value) {
     var result = GetUtils.isEmail((value ?? ''));
     return result == true ? null : 'Geçersiz email adresi';
   }).obs;
 
   /// BUNU HEM LOGIN HEMDE REGISTER DE KULKLANUIYORSUN SABİT OLARAK DIŞARI ÇIKAR
-  Rx<FormFieldValidator<String?>?> _passwordValidator = ((value) =>
+  final Rx<FormFieldValidator<String?>?> _passwordValidator = ((value) =>
       (value ?? '').length > 6
           ? null
           : '6 karakterden daha uzun olmalıdır.').obs;
@@ -61,31 +75,6 @@ class LoginController extends GetxController {
 
   set emailController(TextEditingController value) {
     _emailController.value = value;
-  }
-
-  Future<MyUser> loginUser(GlobalKey<FormState> formKey) async {
-    if (formKey.currentState != null && !formKey.currentState!.validate()) {
-      print("aaaa");
-      isLoginFail = true;
-    } else {
-      isLoginFail = false;
-      String tempEmail = emailController.text.trim();
-      String tempPassword = passwordController.text.trim();
-
-      try {
-        MyUser? myUser = await _userRepository.signInWithEmailAndPassword(
-            tempEmail, tempPassword);
-        print(myUser == null ? " null user" : myUser.email);
-
-        print("bbb");
-      } on FirebaseAuthException catch (e) {
-        switch (e.code) {
-          case "user-not-found":
-            Get.snackbar("Giriş hata ", "Kayıtlı kullanıcı bulunamadı.");
-        }
-      }
-    }
-    return MyUser();
   }
 
   TextEditingController get passwordController => _passwordController.value;

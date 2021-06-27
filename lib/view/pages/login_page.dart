@@ -13,16 +13,12 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     LoginController _loginController = Get.put(LoginController());
-    //final myAuth = Provider.of<UserAuthViewModel>(context, listen: true);
 
     return buildLoginPage(context);
   }
 
   Widget buildLoginPage(BuildContext context) {
-    LoginController _loginController = Get.find();
-    //AuthController _authController = Get.put(AuthController());
     return Scaffold(
-      //resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text("Login Page"),
       ),
@@ -38,7 +34,7 @@ class LoginPage extends StatelessWidget {
           SizedBox(
             height: context.lowValueHeight,
           ),
-          buildForm(_loginController),
+          buildForm(),
           SizedBox(
             height: context.lowValueHeight,
           ),
@@ -57,16 +53,8 @@ class LoginPage extends StatelessWidget {
           TextButton(
               onPressed: () {
                 Get.to(RegisterPage());
-                // final myAuth =
-                //Provider.of<UserAuthViewModel>(context, listen: false);
-                //context.watch<UserAuthViewModel>();
-                /// BURADA NEDEN LİSTEN TRUE VE WATCH ÇALIŞMIYOR SAEBEİNİ ÖĞREN CANIM BENİM
-                //myAuth.userState = UserState.signInPage;
 
-                // Navigator.of(context).push(
-                //  MaterialPageRoute(builder: (context) => RegisterPage()));
-                //Navigator.push(context,
-                //  MaterialPageRoute(builder: (context) => RegisterPage()));
+                /// BURADA NEDEN LİSTEN TRUE VE WATCH ÇALIŞMIYOR SAEBEİNİ ÖĞREN CANIM BENİM
               },
               child: const Text("Create Account")),
         ],
@@ -74,10 +62,11 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget buildForm(LoginController _loginController) {
+  Widget buildForm() {
+    LoginController _loginController = Get.find();
     return Obx(() {
       return Form(
-          autovalidateMode: autoValidateMode(_loginController.isLoginFail),
+          autovalidateMode: autoValidateMode(),
           key: _formKey,
           child: Column(
             children: [
@@ -97,8 +86,10 @@ class LoginPage extends StatelessWidget {
     });
   }
 
-  AutovalidateMode autoValidateMode(bool isLoadingFail) {
-    return isLoadingFail == true
+  AutovalidateMode autoValidateMode() {
+    LoginController _loginController = Get.find();
+
+    return _loginController.isLoginFail == true
         ? AutovalidateMode.always
         : AutovalidateMode.disabled;
   }

@@ -5,21 +5,15 @@ import 'package:weather_auth_app_with_bloc/viewmodel/register_viewmodel/register
 
 class RegisterPage extends StatelessWidget {
   RegisterPage({Key? key}) : super(key: key);
-  bool loginCheck = true;
-
-  /// if loginCheck is true then  login page is displayed otherwise register page is displayed
 
   @override
   Widget build(BuildContext context) {
-    //final myAuth = Provider.of<UserAuthViewModel>(context, listen: true);
     return buildScaffold(context);
   }
 
   Scaffold buildScaffold(BuildContext context) {
     RegisterController _registerController = Get.put(RegisterController());
-
     return Scaffold(
-      ///resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text("Register"),
       ),
@@ -33,29 +27,7 @@ class RegisterPage extends StatelessWidget {
               width: context.ultraHighValueWidth,
               child: Image.asset("assets/weather_logo.png")),
           Obx(() {
-            return Form(
-              key: _registerController.formKey,
-              autovalidateMode:
-                  autoValidateMode(_registerController.isLoginFail),
-              child: Column(
-                children: [
-                  buildTextForm(
-                      hintText: "Name",
-                      controller: _registerController.nameController,
-                      validator: _registerController.nameValidator),
-                  buildTextForm(
-                      hintText: "Email",
-                      controller: _registerController.emailController,
-                      validator: _registerController.emailValidator,
-                      textInputType: TextInputType.emailAddress),
-                  buildTextForm(
-                      hintText: "Password",
-                      controller: _registerController.passwordController,
-                      validator: _registerController.passwordValidator,
-                      obscureText: true),
-                ],
-              ),
-            );
+            return buildForm();
           }),
           SizedBox(
             height: context.lowValueHeight,
@@ -85,8 +57,37 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
-  AutovalidateMode autoValidateMode(bool isLoadingFail) {
-    return isLoadingFail == true
+  Form buildForm() {
+    RegisterController _registerController = Get.find();
+
+    return Form(
+      key: _registerController.formKey,
+      autovalidateMode: autoValidateMode(),
+      child: Column(
+        children: [
+          buildTextForm(
+              hintText: "Name",
+              controller: _registerController.nameController,
+              validator: _registerController.nameValidator),
+          buildTextForm(
+              hintText: "Email",
+              controller: _registerController.emailController,
+              validator: _registerController.emailValidator,
+              textInputType: TextInputType.emailAddress),
+          buildTextForm(
+              hintText: "Password",
+              controller: _registerController.passwordController,
+              validator: _registerController.passwordValidator,
+              obscureText: true),
+        ],
+      ),
+    );
+  }
+
+  AutovalidateMode autoValidateMode() {
+    RegisterController _registerController = Get.find();
+
+    return _registerController.isLoginFail == true
         ? AutovalidateMode.always
         : AutovalidateMode.disabled;
   }
