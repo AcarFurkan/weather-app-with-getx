@@ -10,24 +10,18 @@ class Root extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //AuthController _authController = Get.put(AuthController());
-    //var authProvider = context.watch<UserAuthViewModel>();
     Get.put(UserAuthViewModel());
 
-    //User? user = _authController.user;
-
-    //UserState userState = _userAuthViewModel.userState;
     return Obx(() {
       UserAuthViewModel _userAuthViewModel = Get.find();
       UserState userState = _userAuthViewModel.userState;
-      print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
       if (userState == UserState.loggedIn) {
         print("WEATHER PAGE");
         return WeatherPage();
       } else if (userState == UserState.logging) {
         print("LOGGİNG PAGE");
 
-        return Scaffold(
+        return const Scaffold(
           body: Center(
             child: CircularProgressIndicator(),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:weather_auth_app_with_bloc/utils/extentions/context_extension.dart';
+import 'package:weather_auth_app_with_bloc/utils/components/text_form_field/text_form_field.dart';
+import 'package:weather_auth_app_with_bloc/utils/extensions/context_extension.dart';
 import 'package:weather_auth_app_with_bloc/viewmodel/register_viewmodel/register_viewmodel.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -42,7 +43,6 @@ class RegisterPage extends StatelessWidget {
               child: Text("Do you have a account?")),
           TextButton(
               onPressed: () {
-                //Get.off(const LoginPage());
                 Get.back();
                 // final myAuth =Provider.of<UserAuthViewModel>(context, listen: false);
                 //context.watch<UserAuthViewModel>();
@@ -65,16 +65,16 @@ class RegisterPage extends StatelessWidget {
       autovalidateMode: autoValidateMode(),
       child: Column(
         children: [
-          buildTextForm(
+          EntranceTextFormField(
               hintText: "Name",
               controller: _registerController.nameController,
               validator: _registerController.nameValidator),
-          buildTextForm(
+          EntranceTextFormField(
               hintText: "Email",
               controller: _registerController.emailController,
               validator: _registerController.emailValidator,
               textInputType: TextInputType.emailAddress),
-          buildTextForm(
+          EntranceTextFormField(
               hintText: "Password",
               controller: _registerController.passwordController,
               validator: _registerController.passwordValidator,
@@ -90,27 +90,6 @@ class RegisterPage extends StatelessWidget {
     return _registerController.isLoginFail == true
         ? AutovalidateMode.always
         : AutovalidateMode.disabled;
-  }
-
-  Padding buildTextForm(
-      {required String hintText,
-      required TextEditingController controller,
-      FormFieldValidator<String>? validator,
-      TextInputType? textInputType,
-      bool? obscureText}) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextFormField(
-        controller: controller,
-        validator: validator,
-        obscureText: obscureText ?? false,
-        keyboardType: textInputType ?? TextInputType.text,
-        decoration: InputDecoration(
-            hintText: hintText,
-            labelText: hintText,
-            border: const OutlineInputBorder()),
-      ),
-    );
   }
 
   void _register() {

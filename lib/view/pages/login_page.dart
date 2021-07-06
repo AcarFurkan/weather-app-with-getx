@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:weather_auth_app_with_bloc/utils/extentions/context_extension.dart';
+import 'package:weather_auth_app_with_bloc/utils/components/text_form_field/text_form_field.dart';
+import 'package:weather_auth_app_with_bloc/utils/extensions/context_extension.dart';
 import 'package:weather_auth_app_with_bloc/viewmodel/login_viewmodel/login_viewmodel.dart';
 
 import 'register_page.dart';
@@ -19,46 +20,54 @@ class LoginPage extends StatelessWidget {
 
   Widget buildLoginPage(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Login Page"),
-      ),
-      body: ListView(
-        children: [
-          SizedBox(
-            height: context.mediumValueHeight,
-          ),
-          SizedBox(
-              height: context.ultraHighValueHeight,
-              width: context.ultraHighValueWidth,
-              child: Image.asset("assets/weather_logo.png")),
-          SizedBox(
-            height: context.lowValueHeight,
-          ),
-          buildForm(),
-          SizedBox(
-            height: context.lowValueHeight,
-          ),
-          Padding(
-            padding: context.paddingHighHorizontal,
-            child: OutlinedButton(
-                onPressed: () {
-                  _login(_formKey);
-                },
-                child: const Text("Login")),
-          ),
-          const Align(alignment: Alignment.center, child: Text("New to App?")),
-          SizedBox(
-            height: context.lowValueHeight,
-          ),
-          TextButton(
-              onPressed: () {
-                Get.to(RegisterPage());
+      appBar: buildAppBar(),
+      body: buildBody(context),
+    );
+  }
 
-                /// BURADA NEDEN LİSTEN TRUE VE WATCH ÇALIŞMIYOR SAEBEİNİ ÖĞREN CANIM BENİM
+  ListView buildBody(BuildContext context) {
+    return ListView(
+      children: [
+        SizedBox(
+          height: context.mediumValueHeight,
+        ),
+        SizedBox(
+            height: context.ultraHighValueHeight,
+            width: context.ultraHighValueWidth,
+            child: Image.asset("assets/weather_logo.png")),
+        SizedBox(
+          height: context.lowValueHeight,
+        ),
+        buildForm(),
+        SizedBox(
+          height: context.lowValueHeight,
+        ),
+        Padding(
+          padding: context.paddingHighHorizontal,
+          child: OutlinedButton(
+              onPressed: () {
+                _login(_formKey);
               },
-              child: const Text("Create Account")),
-        ],
-      ),
+              child: const Text("Login")),
+        ),
+        const Align(alignment: Alignment.center, child: Text("New to App?")),
+        SizedBox(
+          height: context.lowValueHeight,
+        ),
+        TextButton(
+            onPressed: () {
+              Get.to(RegisterPage());
+
+              /// BURADA NEDEN LİSTEN TRUE VE WATCH ÇALIŞMIYOR SAEBEİNİ ÖĞREN CANIM BENİM
+            },
+            child: const Text("Create Account")),
+      ],
+    );
+  }
+
+  AppBar buildAppBar() {
+    return AppBar(
+      title: const Text("Login Page"),
     );
   }
 
@@ -70,13 +79,13 @@ class LoginPage extends StatelessWidget {
           key: _formKey,
           child: Column(
             children: [
-              buildTextForm(
+              EntranceTextFormField(
                 hintText: "Email",
                 controller: _loginController.emailController,
                 validator: _loginController.emailValidator,
                 textInputType: TextInputType.emailAddress,
               ),
-              buildTextForm(
+              EntranceTextFormField(
                   hintText: "Password",
                   controller: _loginController.passwordController,
                   validator: _loginController.passwordValidator,
@@ -92,28 +101,6 @@ class LoginPage extends StatelessWidget {
     return _loginController.isLoginFail == true
         ? AutovalidateMode.always
         : AutovalidateMode.disabled;
-  }
-
-  Padding buildTextForm({
-    required String hintText,
-    required TextEditingController controller,
-    FormFieldValidator<String>? validator,
-    TextInputType? textInputType,
-    bool? obscureText,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextFormField(
-        controller: controller,
-        validator: validator,
-        obscureText: obscureText ?? false,
-        keyboardType: textInputType ?? TextInputType.text,
-        decoration: InputDecoration(
-            hintText: hintText,
-            labelText: hintText,
-            border: const OutlineInputBorder()),
-      ),
-    );
   }
 
   void _login(GlobalKey<FormState> formKey) {
